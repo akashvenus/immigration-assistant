@@ -1,0 +1,26 @@
+name: Daily Immigration Data Scrape
+
+on:
+  schedule:
+    - cron: '0 9,15 * * *'
+  workflow_dispatch:
+
+jobs:
+  scrape-and-embed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Run scrape and embed pipeline
+        run: npx tsx scripts/scrape-and-embed.ts
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

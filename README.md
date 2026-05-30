@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CanadaPath AI
 
-## Getting Started
+Canadian immigration assistant (student → PR pathways) using RAG with Gemma 4 via Google AI Studio and Supabase pgvector.
 
-First, run the development server:
+## Tech Stack
+
+- **Framework:** Next.js 16 (App Router)
+- **AI:** Google GenAI SDK (Gemini 2.0 Flash, Gemini Embedding)
+- **Vector DB:** Supabase pgvector
+- **Scraper:** Puppeteer
+- **Deployment:** Vercel + GitHub Actions
+
+## Setup
+
+### 1. Environment Variables
+
+Copy `.env.example` to `.env.local` and fill in the values:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Variable | Description |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL (no trailing path) |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon/public key |
+| `SUPABASE_URL` | Same as above (server-side) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (server-side only) |
+| `GEMINI_API_KEY` | Google AI Studio API key |
+| `SCRAPE_API_KEY` | Secret for protecting `/api/scrape` |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 2. Database
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Run `supabase/schema.sql` in your Supabase **SQL Editor** to create tables, indexes, and the `match_documents` RPC.
 
-## Learn More
+> **Note:** The schema omits the embedding index (pgvector caps indexes at 2000 dims, but our embeddings are 3072 dims). Full scans work fine for demo-scale data.
 
-To learn more about Next.js, take a look at the following resources:
+### 3. Install & Run
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm install
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Open [http://localhost:3000](http://localhost:3000).
 
-## Deploy on Vercel
+## Scraper
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Scrapes Canada.ca immigration pages, chunks text, and embeds into Supabase.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+# Dry run (scrape only, no DB)
+npx tsx scripts/scrape-and-embed.ts --dry-run
+
+# Full run (scrape + embed + upsert)
+npx tsx scripts/scrape-and-embed.ts
+```
+
+### Scheduled Scraping
+
+GitHub Actions runs daily at 9 AM and 3 PM via `.github/workflows/scrape.yml`. The workflow passes secrets as environment variables.
+
+## API Routes
+
+| Route | Description |
+|---|---|
+| `POST /api/chat` | RAG chat: embed query → vector search → stream Gemma 4 |
+| `GET /api/conversations` | List conversations for a device |
+| `POST /api/conversations` | Create a conversation |
+| `GET /api/conversations/[id]` | Get a conversation |
+| `GET /api/conversations/[id]/messages` | Get messages for a conversation |
+| `POST /api/scrape` | Trigger scraper (requires `SCRAPE_API_KEY`) |
+
+## Architecture
+
+```
+User → Chat UI → POST /api/chat → embed query → vector search (Supabase)
+  → build prompt → stream Gemma 4 (Google AI) → sanitize → save → render
+```
+
+## Deployment
+
+Push to GitHub — Vercel auto-deploys. Set all environment variables from `.env.example` in the Vercel dashboard.
