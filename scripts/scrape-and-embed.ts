@@ -29,7 +29,7 @@ async function main() {
   for (const chunk of chunks) {
     try {
       const embedding = await embedText(chunk.content)
-      const id = Buffer.from(chunk.source_url).toString('base64').slice(0, 20) + '_' + chunk.chunk_index
+      const id = chunk.source_url + '::' + chunk.chunk_index
 
       const { error } = await getSupabaseAdmin().from('documents').upsert(
         {
