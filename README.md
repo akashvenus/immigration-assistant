@@ -1,13 +1,13 @@
 # CanadaPath AI
 
-Canadian immigration assistant (student → PR pathways) using RAG with Gemma 4 via Google AI Studio and Supabase pgvector.
+Canadian immigration assistant (student → PR pathways) using RAG with **Gemma 4 26B** via Google AI Studio and Supabase pgvector.
 
 ## Tech Stack
 
 - **Framework:** Next.js 16 (App Router)
-- **AI:** Google GenAI SDK (Gemini 2.0 Flash, Gemini Embedding)
-- **Vector DB:** Supabase pgvector
-- **Scraper:** Puppeteer
+- **AI:** Google GenAI SDK (Gemma 4 26B for LLM, Gemini Embedding 2 for embeddings)
+- **Vector DB:** Supabase pgvector (768-dim embeddings)
+- **Scraper:** Puppeteer (local development)
 - **Deployment:** Vercel + GitHub Actions
 
 ## Setup
@@ -33,7 +33,7 @@ cp .env.example .env.local
 
 Run `supabase/schema.sql` in your Supabase **SQL Editor** to create tables, indexes, and the `match_documents` RPC.
 
-> **Note:** The schema omits the embedding index (pgvector caps indexes at 2000 dims, but our embeddings are 3072 dims). Full scans work fine for demo-scale data.
+> **Note:** The schema omits the embedding index — full scans work fine for demo-scale data (~200 documents).
 
 ### 3. Install & Run
 
@@ -59,6 +59,8 @@ npx tsx scripts/scrape-and-embed.ts
 ### Scheduled Scraping
 
 GitHub Actions runs daily at 9 AM and 3 PM via `.github/workflows/scrape.yml`. The workflow passes secrets as environment variables.
+
+> **Note:** The GHA scraper currently fails because Canada.ca blocks Puppeteer/Chromium connections from GitHub Actions runners and AWS Lambda. Puppeteer works reliably when run locally (`npx tsx scripts/scrape-and-embed.ts`). A fix using EC2 or an alternative runner is planned.
 
 ## API Routes
 
