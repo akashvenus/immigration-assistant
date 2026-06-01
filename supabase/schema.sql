@@ -28,8 +28,18 @@ CREATE TABLE documents (
   metadata JSONB DEFAULT '{}'::jsonb
 );
 
+CREATE TABLE site_meta (
+  key TEXT PRIMARY KEY,
+  value TEXT,
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
 CREATE INDEX idx_conversations_device ON conversations(device_id);
 CREATE INDEX idx_messages_conversation ON messages(conversation_id);
+
+INSERT INTO site_meta (key, value, updated_at)
+VALUES ('last_updated', '1970-01-01T00:00:00Z', now())
+ON CONFLICT (key) DO NOTHING;
 
 CREATE OR REPLACE FUNCTION match_documents(
   query_embedding vector(3072),
