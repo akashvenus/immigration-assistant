@@ -1,3 +1,4 @@
+import { createHash } from 'crypto'
 import { SCRAPE_SOURCES } from './sources'
 import { chunkText } from './chunker'
 import type { ScrapeSource } from '@/types'
@@ -8,6 +9,7 @@ export interface ScrapedChunk {
   content: string
   chunk_index: number
   category: string
+  content_hash: string
 }
 
 async function expandAccordions(page: any): Promise<void> {
@@ -80,6 +82,7 @@ export async function scrapeUrl(url: string, browser: any): Promise<ScrapedChunk
       return []
     }
 
+    const contentHash = createHash('sha256').update(cleaned).digest('hex').slice(0, 16)
     const chunks = chunkText(cleaned)
     return chunks.map(chunk => ({
       source_url: url,
@@ -87,6 +90,7 @@ export async function scrapeUrl(url: string, browser: any): Promise<ScrapedChunk
       content: chunk.content,
       chunk_index: chunk.index,
       category: '',
+      content_hash: contentHash,
     }))
   } catch (error) {
     console.error(`Failed to scrape ${url}:`, (error as Error).message)

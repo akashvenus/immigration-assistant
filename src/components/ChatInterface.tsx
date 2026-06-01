@@ -23,7 +23,15 @@ export function ChatInterface({
   const [loading, setLoading] = useState(false)
   const [streamingContent, setStreamingContent] = useState('')
   const [simplified, setSimplified] = useState(false)
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    fetch('/api/metadata')
+      .then(r => r.json())
+      .then(d => setLastUpdated(d.lastUpdated))
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -115,7 +123,14 @@ export function ChatInterface({
   return (
     <div className="flex-1 flex flex-col h-full">
       <div className="flex items-center justify-between px-6 py-3 border-b border-gray-200 bg-white">
-        <h2 className="text-lg font-semibold text-gray-800">CanadaPath AI</h2>
+        <div>
+          <h2 className="text-lg font-semibold text-gray-800">CanadaPath AI</h2>
+          {lastUpdated && (
+            <p className="text-xs text-gray-500">
+              Data last updated: {new Date(lastUpdated).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' })}
+            </p>
+          )}
+        </div>
         <LanguageToggle simplified={simplified} onChange={setSimplified} />
       </div>
 
