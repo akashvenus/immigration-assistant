@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
 
   const { data, error } = await getSupabaseAdmin()
     .from('conversations')
-    .insert({ id, device_id: deviceId, title: title || 'New conversation' })
+    .upsert({ id, device_id: deviceId, title: title || 'New conversation' }, { onConflict: 'id' })
     .select()
     .single()
 
