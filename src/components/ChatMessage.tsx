@@ -11,18 +11,25 @@ export function ChatMessage({ message }: ChatMessageProps) {
   const isUser = message.role === 'user'
 
   const renderContent = (content: string) => {
-    const parts = content.split(/(\[Source \d+\])/g)
+    const parts = content.split(/(\[Source [\d,\s]+\])/g)
     return parts.map((part, i) => {
-      const match = part.match(/\[Source (\d+)\]/)
-      if (match && message.citations[parseInt(match[1]) - 1]) {
-        const idx = parseInt(match[1]) - 1
-        return (
-          <CitationBadge
-            key={i}
-            citation={message.citations[idx]}
-            index={idx}
-          />
-        )
+      const match = part.match(/\[Source ([\d,\s]+)\]/)
+      if (match) {
+        const indices = match[1].split(',').map(s => parseInt(s.trim()) - 1)
+        const validIndices = indices.filter(idx => message.citations[idx])
+        if (validIndices.length > 0) {
+          return (
+            <span key={i} className="inline-flex gap-0.5">
+              {validIndices.map(idx => (
+                <CitationBadge
+                  key={idx}
+                  citation={message.citations[idx]}
+                  index={idx}
+                />
+              ))}
+            </span>
+          )
+        }
       }
       return <span key={i}>{part}</span>
     })
@@ -37,9 +44,9 @@ export function ChatMessage({ message }: ChatMessageProps) {
             : 'bg-gray-100 text-gray-900 rounded-bl-md'
         }`}
       >
-        <p className="text-sm leading-relaxed whitespace-pre-wrap">
+        <div className="text-sm leading-relaxed whitespace-pre-wrap">
           {renderContent(message.content)}
-        </p>
+        </div>
       </div>
     </div>
   )

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import type { Citation } from '@/types'
 
 interface CitationBadgeProps {
@@ -10,9 +10,21 @@ interface CitationBadgeProps {
 
 export function CitationBadge({ citation, index }: CitationBadgeProps) {
   const [show, setShow] = useState(false)
+  const ref = useRef<HTMLSpanElement>(null)
+
+  useEffect(() => {
+    if (!show) return
+    const handleClick = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setShow(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [show])
 
   return (
-    <span className="relative inline">
+    <span ref={ref} className="relative inline">
       <button
         onClick={() => setShow(!show)}
         className="inline-flex items-center justify-center w-5 h-5 text-xs font-medium text-blue-700 bg-blue-100 rounded-full hover:bg-blue-200 transition-colors"
