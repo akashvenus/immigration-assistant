@@ -59,7 +59,7 @@ export default function LandingPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
           </Link>
-          <p className="text-sm text-gray-400 mt-4">Free • No sign-up required</p>
+          <p className="text-sm text-gray-500 mt-4">Free • No sign-up required</p>
         </section>
 
         <section className="max-w-5xl mx-auto px-4 py-16">
@@ -70,11 +70,11 @@ export default function LandingPage() {
                 <div className="border border-gray-200 rounded-xl p-6 text-center hover:border-blue-300 hover:shadow-md transition-all">
                   <span className="text-4xl mb-3 block">{p.icon}</span>
                   <h4 className="font-semibold text-gray-900 mb-2">{p.title}</h4>
-                  <p className="text-sm text-gray-500">{p.description}</p>
+                  <p className="text-sm text-gray-600">{p.description}</p>
                 </div>
                 {i < pathways.length - 1 && (
                   <div className="hidden md:block absolute top-1/2 -right-3 transform -translate-y-1/2">
-                    <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </div>
@@ -104,7 +104,7 @@ export default function LandingPage() {
       </main>
 
       <footer className="border-t border-gray-100 py-8">
-        <div className="max-w-6xl mx-auto px-4 text-center text-sm text-gray-400">
+        <div className="max-w-6xl mx-auto px-4 text-center text-sm text-gray-500">
           <p className="mb-2">CanadaPath AI is an informational assistant only. Not a substitute for professional legal advice from a licensed RCIC or immigration lawyer.</p>
           <p>Always verify information with official IRCC sources.</p>
         </div>
