@@ -75,12 +75,22 @@ export function ChatInterface({
         }
       }
 
+      let citations: import('@/types').Citation[] = []
+      const metaMatch = fullContent.match(/__META__(\{.*\})__META__$/)
+      if (metaMatch) {
+        try {
+          const meta = JSON.parse(metaMatch[1])
+          citations = meta.citations || []
+        } catch {}
+        fullContent = fullContent.slice(0, metaMatch.index)
+      }
+
       const assistantMessage: Message = {
         id: crypto.randomUUID(),
         conversation_id: conversationId,
         role: 'assistant',
         content: fullContent,
-        citations: [],
+        citations,
         created_at: new Date().toISOString(),
       }
 

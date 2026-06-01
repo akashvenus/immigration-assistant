@@ -72,20 +72,7 @@ export default function ChatPage() {
     setMessages(newMessages)
 
     const lastMsg = newMessages[newMessages.length - 1]
-    if (!lastMsg) return
-
-    await fetch(`/api/conversations/${conversationId}/messages`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        messageId: lastMsg.id,
-        role: lastMsg.role,
-        content: lastMsg.content,
-        citations: lastMsg.citations,
-      }),
-    })
-
-    if (newMessages.length === 1) {
+    if (lastMsg && newMessages.length === 1) {
       const title = lastMsg.content.slice(0, 50) + (lastMsg.content.length > 50 ? '...' : '')
       await fetch(`/api/conversations`, {
         method: 'POST',

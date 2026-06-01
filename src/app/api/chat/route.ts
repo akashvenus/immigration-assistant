@@ -34,8 +34,8 @@ export async function POST(request: NextRequest) {
 
     const { data: chunks } = await getSupabaseAdmin().rpc('match_documents', {
       query_embedding: queryEmbedding,
-      match_threshold: 0.7,
-      match_count: 5,
+      match_threshold: 0.5,
+      match_count: 10,
     })
 
     const context = (chunks || []).map((c: any) => ({
@@ -118,6 +118,8 @@ Provide a helpful, accurate answer based on the information above. Include citat
             .update({ updated_at: new Date().toISOString() })
             .eq('id', conversationId)
 
+          const metaLine = `\n__META__${JSON.stringify({ citations })}__META__`
+          controller.enqueue(encoder.encode(metaLine))
           controller.close()
         } catch (error) {
           controller.error(error)
