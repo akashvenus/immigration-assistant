@@ -126,7 +126,7 @@ export function ChatInterface({
               <h3 className="text-xl font-semibold text-gray-700 mb-2">
                 Welcome to CanadaPath AI
               </h3>
-              <p className="text-gray-500 text-sm">
+              <p className="text-gray-600 text-sm">
                 Ask me anything about Canadian immigration pathways from student to PR. I can help with study permits, PGWP, Express Entry, PNP programs, and more.
               </p>
             </div>
@@ -160,7 +160,7 @@ export function ChatInterface({
         <div ref={messagesEndRef} />
 
         {messages.length > 0 && (
-          <p className="text-xs text-gray-400 text-center mt-4">{DISCLAIMER}</p>
+          <p className="text-xs text-gray-500 text-center mt-4">{DISCLAIMER}</p>
         )}
       </div>
 
@@ -178,7 +178,7 @@ export function ChatInterface({
             onChange={e => setInput(e.target.value)}
             placeholder="Ask about Canadian immigration..."
             disabled={loading}
-            className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm disabled:opacity-50"
+            className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-gray-900 placeholder-gray-500 disabled:opacity-50"
           />
           <button
             type="submit"

@@ -29,7 +29,7 @@ export function ConversationSidebar({
       </div>
       <div className="flex-1 overflow-y-auto p-2">
         {conversations.length === 0 && (
-          <p className="text-gray-400 text-sm text-center mt-8">
+          <p className="text-gray-500 text-sm text-center mt-8">
             No conversations yet
           </p>
         )}
