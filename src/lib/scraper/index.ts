@@ -45,22 +45,7 @@ export async function scrapeUrl(url: string, browser: any): Promise<ScrapedChunk
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     )
 
-    const MAX_RETRIES = 2
-    let lastError: Error | null = null
-    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-      try {
-        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 })
-        lastError = null
-        break
-      } catch (e) {
-        lastError = e as Error
-        console.warn(
-          `Attempt ${attempt + 1}/${MAX_RETRIES + 1} failed for ${url}: ${(e as Error).message}`
-        )
-        if (attempt < MAX_RETRIES) await new Promise(r => setTimeout(r, 2000))
-      }
-    }
-    if (lastError) throw lastError
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 })
 
     await new Promise(r => setTimeout(r, 3000))
 
@@ -125,7 +110,7 @@ export async function scrapeAllSources(): Promise<ScrapedChunk[]> {
   const { default: puppeteer } = await import('puppeteer')
   const browser = await puppeteer.launch({
     headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-http2'],
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
   })
 
   try {
